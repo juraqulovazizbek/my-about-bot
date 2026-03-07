@@ -191,10 +191,9 @@ async def handle_user_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await send_post_item(update.message, context, post)
 
         await update.message.reply_text(
-            " ",
-            reply_markup=get_all_posts_button(lang)
+             "📚 Barcha postlarni ko‘rish uchun tugmani bosing.",
+         reply_markup=get_all_posts_button(lang)
         )
-
     elif text == tr["menu_channels"]:
         channels = get_all_channels()
         instagram_url = get_setting("instagram_url", "")

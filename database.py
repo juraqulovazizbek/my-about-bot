@@ -1,7 +1,9 @@
+from pathlib import Path
 import sqlite3
 from contextlib import closing
 
-DB_NAME = "bot.db"
+BASE_DIR = Path(__file__).resolve().parent
+DB_NAME = BASE_DIR / "bot.db"
 
 
 def get_connection():
@@ -15,6 +17,7 @@ def _add_column_if_missing(table_name: str, column_name: str, column_def: str):
         cursor = conn.cursor()
         cursor.execute(f"PRAGMA table_info({table_name})")
         columns = [row["name"] for row in cursor.fetchall()]
+
         if column_name not in columns:
             cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_def}")
             conn.commit()
@@ -95,7 +98,10 @@ def init_db():
     _add_column_if_missing("posts", "media_type", "TEXT")
     _add_column_if_missing("posts", "file_id", "TEXT")
 
-    set_setting_if_not_exists("about_text", "Ism: Azizbek\nKasb: Developer\nYo‘nalish: Python / Django / Telegram bot")
+    set_setting_if_not_exists(
+        "about_text",
+        "Ism: Azizbek\nKasb: Developer\nYo‘nalish: Python / Django / Telegram bot"
+    )
     set_setting_if_not_exists("instagram_url", "")
     normalize_channel_urls()
 
@@ -107,6 +113,7 @@ def normalize_url(url: str) -> str:
         return f"https://t.me/{url[1:]}"
     if url.startswith("t.me/"):
         return f"https://{url}"
+
     return url
 
 
@@ -243,6 +250,7 @@ def delete_post(post_id: int) -> bool:
 
 def add_channel(name: str, url: str):
     fixed_url = normalize_url(url)
+
     with closing(get_connection()) as conn:
         cursor = conn.cursor()
         cursor.execute(
